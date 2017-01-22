@@ -1,0 +1,73 @@
+<html>
+	<head>
+		<title>Chat Room</title>
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+	</head>
+
+	<body>
+		<script type="text/javascript">
+			$(document).ready(function(){
+				try{
+					var socket = io.connect('http://localhost:5000');
+					var i = false;
+
+					socket.on('connect_error', function(err) {
+						// handle server error here
+						if(i===false){
+							alert('Sorry, Connection Refused... A notification will appear when connection is accepted');
+							i=true;
+							$("#messages").append('<li>' + err + '</li>');
+						}
+					});
+
+					socket.on('connect', function(){
+						var m = {"type" : 'connect', resource : ""};
+						i = false;
+						socket.send(m);
+					});
+
+					socket.on('disconnect', function(){
+						var m = {"type" : 'disconnect', resource : ""};
+						socket.send(m);
+					});
+
+					socket.on('message', function(msg){
+						$("#messages").append('<li>' + msg + '</li>');
+					});
+
+					var command = function(t, v){
+						i = false;
+						var m = {"type" : t, resource: v};
+						socket.send(m);
+					};
+					$('#demandbutton').on('click', function(){
+						command('demand', $('#myDemand').val());
+						$('#myDemand').val('');
+					});
+
+					$('#releasebutton').on('click', function(){
+						command('release', $('#myRelease').val());
+						
+						$('#myRelease').val('');
+					});
+
+					$('#commandbutton').on('click', function(){
+						command('command', $('#myCommand').val());
+						
+						$('#myCommand').val('');
+					});
+				}catch(e){
+					alert("Sorry, Connection terminated");
+				}
+			},function(x){console.log(x)},function(y){console.log(y)});
+		</script>
+		<ul id="messages"></ul>
+		<input type="text" id="myDemand"/>
+		<button id="demandbutton">Demand Resource</button>
+		<input type="text" id="myRelease"/>
+		<button id="releasebutton">Release Resource</button>
+		<input type="text" id="myCommand"/>
+		<button id="commandbutton">Apply Command on the last Resource</button>
+	</body>
+</html>
