@@ -48,13 +48,11 @@
 
 					$('#releasebutton').on('click', function(){
 						command('release', $('#myRelease').val());
-						
 						$('#myRelease').val('');
 					});
 
 					$('#commandbutton').on('click', function(){
 						command('command', $('#myCommand').val());
-						
 						$('#myCommand').val('');
 					});
 				}catch(e){
