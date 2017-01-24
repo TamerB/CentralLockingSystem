@@ -150,6 +150,13 @@ def check_timeout(resource):
 
 
 def check_deadlocks():
+	'''while True:
+		for resource in queues:
+			for i in range(1, len(queues[resource]['clients'])):
+				for r in queues:
+					if queues[resource]['clients'][i] == queues[r]['clients'][0] and queues[resource]['clients'][0] in queues[r]['clients']:
+
+	'''
 	pass
 
 
