@@ -150,14 +150,28 @@ def check_timeout(resource):
 
 
 def check_deadlocks():
-	'''while True:
+	while True:
+		time.sleep(10)
 		for resource in queues:
-			for i in range(1, len(queues[resource]['clients'])):
-				for r in queues:
-					if queues[resource]['clients'][i] == queues[r]['clients'][0] and queues[resource]['clients'][0] in queues[r]['clients']:
+			resources_array=[]
+			if len(queues[resource]['clients']) > 0:
+				resources_array.append(resource)
+				check_deadlocks1(resources_array)
 
-	'''
-	pass
+
+def check_deadlocks1(resources_array):
+	for resource in queues:
+		if resource not in resources_array and len(queues[resource]['clients']) > 0 and queues[resources_array[:-1]][0] in queues[resource]['clients'][1:] and queues[resource]['active'] == True:
+			for item in resources_array:
+				if queues[resource]['clients'][0] in queues[item]['clients'][1:]:
+					if queues[item]['time'] - queues[resource]['time'] > 0:
+						release_item(item, ' Deadlock')
+						return
+					else:
+						release_item(resource, ' Deadlock')
+						return
+			resources_array.append(resource)
+			check_deadlocks1(resources_array)
 
 
 @socketio.on('connect')
